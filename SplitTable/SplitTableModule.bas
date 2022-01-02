@@ -76,26 +76,49 @@ Private Sub duplicateCell(tbl As Table, curRow As Integer, curCol As Integer)
         Next
         
         'Delete columns before and after the current one
-        For j = 1 To curCol - 1
-            .Columns(1).Delete
-        Next
+       If .Columns.Count > 1 Then
+       
+       
+            For j = 1 To curCol - 1
+                
+                .Columns(1).Delete
+                
+                If .Columns.Count = 1 Then
+                    Exit For
+                End If
+            Next
         
-        For j = curCol + 1 To cols
-            .Columns(2).Delete
-        Next
+        
+        
+            If .Columns.Count > 1 Then
+                
+                For j = curCol + 1 To cols
+                    
+                    .Columns(2).Delete
+                    
+                    If .Columns.Count = 1 Then
+                        Exit For
+                    End If
+                Next
+            
+            End If
+            
+        End If '.columns.count > 1 - first one
         
         ' Change dimensions of the single-cell table shape to
         ' match the dimensions of the correspoding cell in
         ' the original table.
         Dim originalShape As Shape
-        Set originalShape = tbl.cell(curRow, curCol).Shape
-        originalShape.PickUp
+        Set originalShape = tbl.Cell(curRow, curCol).Shape
+        'originalShape.PickUp
         With .Parent
             .Left = originalShape.Left
             .Top = originalShape.Top
             .Width = originalShape.Width
             .Height = originalShape.Height
-            .Apply
+            
+            .Name = tbl.Parent.Name + " >> R:" + Trim(Str(curRow)) + " C:" + Trim(Str(curCol))
+            
         End With
         
         
