@@ -166,11 +166,16 @@ Private Sub duplicateCell(tbl As Table, curRow As Integer, curCol As Integer, pr
         ' current one, delete them
         If .Columns.Count > 1 Then
             Dim startCol As Integer
+            
+            ' If there were any previously merged cells
+            ' before the current one, the column numbers
+            ' need to be adjusted.
             If prevMergedColCount > 0 Then
                 startCol = curCol - prevMergedColCount
             Else
                 startCol = curCol + 1
             End If
+            
             For j = startCol To cols
                 .Columns(2).Delete
                 ' Because of the possibility of merged
