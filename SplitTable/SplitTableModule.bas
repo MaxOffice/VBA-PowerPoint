@@ -2,8 +2,10 @@ Attribute VB_Name = "SplitTableModule"
 Option Explicit
 
 Public Sub SplitTable()
-    ' If current window and selection cannot be determined, do
-    ' nothing and exit.
+    ' If current window and selection cannot be determined,
+    ' do nothing and exit.
+    
+    
     If ActiveWindow Is Nothing Then
         Exit Sub
     End If
@@ -15,23 +17,50 @@ Public Sub SplitTable()
     ' Check if the selection is exactly one table shape. If not,
     ' show message and exit. Else, process it.
     With ActiveWindow.Selection
-        If .Type <> ppSelectionShapes Then
+    
+        If .Type <> ppSelectionShapes And .Type <> ppSelectionText Then
             MsgBox "Select only and exactly one table, and try again", vbExclamation, "Split Table"
             Exit Sub
         End If
-    
+
         If .ShapeRange.Count <> 1 Then
             MsgBox "Select only and exactly one table, and try again", vbExclamation, "Split Table"
             Exit Sub
         End If
         
+        'check if current selection context is a table
+        'works even if you are editing text inside the table
+        If .ShapeRange.Type <> MsoShapeType.msoTable Then
+            MsgBox "Select only and exactly one table, and try again", vbExclamation, "Split Table"
+            Exit Sub
+        End If
+
+        'slide and presentation reference for adding animation
+        Dim ap As Presentation
+        Dim curSlide As Slide
+        Set curSlide = ActiveWindow.View.Slide
+        Set ap = ActivePresentation
+        
+
+        
         Dim selectedShape As Shape
         Set selectedShape = .ShapeRange(1)
+        
         If selectedShape.HasTable <> msoTrue Then
             MsgBox "The selection does not seem to be a table." & vbCrLf & _
                    "Select only and exactly one table, and try again", vbExclamation, "Split Table"
             Exit Sub
         End If
+        
+        'if table has only one row and column - nothing
+        With selectedShape.Table
+            If .rows.Count = 1 And .Columns.Count = 1 Then
+                MsgBox "This table has only one row and column." & vbCrLf & _
+                        "Cannot split this table further.", vbInformation, "Split Table"
+            End If
+            
+        End With
+        
         
         explodeTable selectedShape.Table
         
@@ -103,6 +132,18 @@ Private Sub duplicateCell(tbl As Table, curRow As Integer, curCol As Integer, pr
     Set newTable = tbl.Parent.Duplicate(1).Table
     
     With newTable
+    
+        'remove unwanted formatting styles from the duplicate table
+        .FirstRow = False
+        .LastRow = False
+        .HorizBanding = False
+        .VertBanding = False
+        .LastCol = False
+        .FirstCol = False
+        
+        
+        
+        
         Dim rows As Integer, cols As Integer
         Dim i As Integer, j As Integer
     
@@ -191,11 +232,20 @@ Private Sub duplicateCell(tbl As Table, curRow As Integer, curCol As Integer, pr
         ' Change dimensions of the single-cell table shape to
         ' match the dimensions of the correspoding cell in
         ' the original table.
-        Dim originalShape As Shape
+        Dim originalShape As Shape, newShape As Shape
+        
         Set originalShape = tbl.Cell(curRow, curCol).Shape
+        
+        Set newShape = newTable.Cell(1, 1).Shape
+        
+        
+        
+        
+        copyShapeFormatting originalShape, newShape
         
         With .Parent
             .Left = originalShape.Left
+            
             .Top = originalShape.Top
             .Width = originalShape.Width
             .Height = originalShape.Height
@@ -204,7 +254,43 @@ Private Sub duplicateCell(tbl As Table, curRow As Integer, curCol As Integer, pr
             
         End With
         
+        'animate the new table piece
+        animateShape newTable
+        
     End With
     
 End Sub
 
+Private Sub copyShapeFormatting(origShape As Shape, newShape As Shape)
+'copy font and fill formatting from original table cell
+
+    'suppresses errors due to non-existent properties like border
+    On Error Resume Next
+    
+    
+    
+    With newShape
+    
+        .TextFrame.TextRange.Font.Color = origShape.TextFrame.TextRange.Font.Color
+        .TextFrame.TextRange.Font.Name = origShape.TextFrame.TextRange.Font.Name
+           
+        .Line.ForeColor.RGB = origShape.Line.ForeColor.RGB
+        .Line.BackColor.RGB = origShape.Line.BackColor.RGB
+        .Line.DashStyle = origShape.Line.DashStyle
+    
+        .Fill.ForeColor.RGB = origShape.Fill.ForeColor.RGB
+        .Fill.BackColor.RGB = origShape.Fill.BackColor.RGB
+   
+    End With
+    
+End Sub
+
+Private Sub animateShape(sh As Table)
+    
+    'animate the shape with default - appear animation
+    Dim sld As Slide
+    Dim eff As Effect
+    Set sld = sh.Parent.Parent
+    
+    Set eff = sld.TimeLine.MainSequence.AddEffect(sh.Parent, msoAnimEffectFade)
+End Sub
