@@ -25,7 +25,35 @@ Sub ArrangePics()
     Dim sm As SmartArt
     Dim nd As SmartArtNode
     Dim f As Integer, piccount As Integer, ub As Integer
+        'check if anything is selected
+        
+    If ActiveWindow Is Nothing Then
+        
+        MsgBox "Select at least three pictures on a slide and try again"
+        Exit Sub
     
+    End If
+
+    If ActiveWindow.Selection Is Nothing Then
+        
+        MsgBox "Select at least three pictures on a slide and try again"
+        Exit Sub
+    
+    End If
+    
+    If ActiveWindow.ViewType <> ppViewNormal And ActiveWindow.ViewType <> ppViewSlide Then
+        
+        MsgBox "Select at least three pictures on a slide and try again"
+        Exit Sub
+    
+    End If
+    
+    If ActiveWindow.Selection Is Nothing Then
+        MsgBox "Select at least three pictures and try again"
+                Exit Sub
+    End If
+    
+        
         
     'Set current view for copy pasting shapes later
     Set vw = ActiveWindow.View
@@ -41,8 +69,7 @@ Sub ArrangePics()
         Exit Sub
         
     End If
-    
-    'Check each selected item to see if it is a picture or graphic
+        'Check each selected item to see if it is a picture or graphic
     'Only if more than two picture / graphic items are found, the macro works
     
     With ActiveWindow.Selection
