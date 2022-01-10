@@ -60,6 +60,12 @@ Public Sub ArrangePics()
                 "Select at least three pictures on a slide and try again"
         Exit Sub
     End If
+    
+    ' Check if the slide pane is active (not the thumnail or any other pane)
+    If Not ActiveWindow.ActivePane.ViewType = ppViewSlide Then
+        MsgBox "Select multiple pictures and then run this macro"
+        Exit Sub
+    End If
         
     On Error GoTo 0
         
@@ -68,7 +74,8 @@ Public Sub ArrangePics()
     
     ' Set reference to current slide
     Set sld = ActiveWindow.View.Slide
-
+    
+    
     
     ' If nothing is selected, return
     If ActiveWindow.Selection.Type = ppSelectionNone Then
@@ -78,7 +85,7 @@ Public Sub ArrangePics()
     
     ' Check each selected item to see if it is a picture or graphic
     ' Only if more than two picture / graphic items are found, the macro works
-    
+
     With ActiveWindow.Selection
         
         If .ShapeRange.Count > 0 Then
@@ -237,12 +244,15 @@ convertToSmartArtTimingErr:
         ' Unhide processed pictures
         Dim j As Integer
         For j = 1 To i
-            sld.Shapes(j).Visible = msoTrue
+            shpArr(j).Visible = msoTrue
         Next
         
-        MsgBox "We are sorry. Due to errors beyond our control, the process could not be completed." & vbCrLf & _
-                "We have reverted your slide to what it was before the process." & vbCrLf & _
+        MsgBox "We are sorry. Due to errors beyond our control," & vbCrLf & _
+                "the process could not be completed." & vbCrLf & vbCrLf & _
+                "We are reverting your slide to the original state." & vbCrLf & _
                 "The process may work if you try again."
+        
+        sld.Select
         
         Exit Sub
     End If
