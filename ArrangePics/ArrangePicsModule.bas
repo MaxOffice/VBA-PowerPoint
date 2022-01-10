@@ -4,6 +4,7 @@ Option Base 1
 
 
 Private Const MAXERRORS As Integer = 100
+Private Const MACROTITLE As String = "Arrange Pictures"
 
 Public Sub ArrangePics()
 
@@ -46,24 +47,25 @@ Public Sub ArrangePics()
     On Error GoTo ArrangePicsSelectionErr:
     
     If ActiveWindow Is Nothing Then
-        MsgBox "Select at least three pictures on a slide and try again"
+        MsgBox "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
 
     If ActiveWindow.Selection Is Nothing Then
-        MsgBox "Nothing is selected. Select at least three pictures on a slide and try again"
+        MsgBox "Nothing is selected. Select at least three pictures on a slide and try again." _
+                    , vbExclamation, MACROTITLE
         Exit Sub
     End If
     
     If ActiveWindow.ViewType <> ppViewNormal And ActiveWindow.ViewType <> ppViewSlide Then
         MsgBox "Please switch to normal or slide view." & vbCrLf & _
-                "Select at least three pictures on a slide and try again"
+                "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
     
     ' Check if the slide pane is active (not the thumnail or any other pane)
     If Not ActiveWindow.ActivePane.ViewType = ppViewSlide Then
-        MsgBox "Select multiple pictures and then run this macro"
+        MsgBox "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
         
@@ -79,7 +81,7 @@ Public Sub ArrangePics()
     
     ' If nothing is selected, return
     If ActiveWindow.Selection.Type = ppSelectionNone Then
-        MsgBox "Select multiple pictures and then run this macro"
+        MsgBox "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
     
@@ -105,11 +107,11 @@ Public Sub ArrangePics()
             
             ' Exit if less than two picture items are available
             If PicCount < 3 Then
-                MsgBox "Select at least three pictures and try again"
+                MsgBox "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
                 Exit Sub
             End If
         Else
-            MsgBox "Select at least three pictures and try again"
+            MsgBox "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
             Exit Sub
         End If
     End With
@@ -120,7 +122,7 @@ Public Sub ArrangePics()
     
 ArrangePicsSelectionErr:
     MsgBox "Please switch to normal or slide view." & vbCrLf & _
-            "Select at least three pictures on a slide and try again"
+            "Select at least three pictures on a slide and try again.", vbExclamation, MACROTITLE
 End Sub
 
 
@@ -250,7 +252,8 @@ convertToSmartArtTimingErr:
         MsgBox "We are sorry. Due to errors beyond our control," & vbCrLf & _
                 "the process could not be completed." & vbCrLf & vbCrLf & _
                 "We are reverting your slide to the original state." & vbCrLf & _
-                "The process may work if you try again."
+                "The process may work if you try again.", _
+                vbCritical, MACROTITLE
         
         sld.Select
         
