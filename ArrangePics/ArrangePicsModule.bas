@@ -2,27 +2,44 @@ Attribute VB_Name = "ArrangePicsModule"
 Option Explicit
 Option Base 1
 
+
+Private Const MAXERRORS As Integer = 100
+
 Public Sub ArrangePics()
 
-    'Arrange pictures in a smartart
-    'Best usage scenario is the add all your customer / product logos and arrange them instantly
+    ' Arrange pictures in a smartart
+    ' Best usage scenario is the add all your customer / product logos and arrange them instantly
     
-    'Created by Dr Nitin Paranjape and Raj Chudhuri
-    'Created on 8 Jan 2022
+    ' Created by Dr Nitin Paranjape and Raj Chaudhuri
+    ' Created on 8 Jan 2022
     
-    'The default Picture SmartArt layout uses Picture Fill.
-    'Due to this many pictures get cut off.
-    'This macro fits the pictures properly
+    ' How to use this macro:
+    ' Select three or more pictures (or graphics) and run the macro
+    ' Selected shapes will be arranged in a SmartArt
+    ' Original shapes are hidden (not deleted)
+    ' There is no technical limit to the number of shapes you can select
+    ' More shapes means more processing time.
+    
+    ' For technical reasons, we cannot show a progress bar.
+    ' The only way to check the progress is to look at the status bar
+    ' You will see a flickering message like "Press Esc to ..."
+    ' This indicates that the processing is in progress
     
     
-    'Declare relevant variables
+    ' The default Picture SmartArt layout uses Picture Fill.
+    ' Due to this many pictures get cut off.
+    ' This macro fits the pictures properly
+    
+    
+    ' Declare relevant variables
     
     Dim vw As View
     Dim sld As Slide
     Dim shp As Shape
     
+    ' Array to hold selected shapes
     Dim shpArr() As Shape
-    Dim piccount As Integer
+    Dim PicCount As Integer
     
         
     ' Check if anything is selected
@@ -66,13 +83,13 @@ Public Sub ArrangePics()
         
         If .ShapeRange.Count > 0 Then
             
-            piccount = 0
+            PicCount = 0
             
             ' Check each shape in the selection
             For Each shp In .ShapeRange
                 If isPictureShape(shp) Then
                     ' Increment picture counter
-                    piccount = piccount + 1
+                    PicCount = PicCount + 1
                     
                     ' Add the shape to array
                     arrayInsert shpArr, shp
@@ -80,7 +97,7 @@ Public Sub ArrangePics()
             Next
             
             ' Exit if less than two picture items are available
-            If piccount < 3 Then
+            If PicCount < 3 Then
                 MsgBox "Select at least three pictures and try again"
                 Exit Sub
             End If
@@ -112,7 +129,11 @@ Private Sub convertToSmartArt(vw As View, sld As Slide, shpArr() As Shape)
     Dim sm As SmartArt
     Dim nd As SmartArtNode
     
+    Dim errCount As Integer
+    
     Set sm = sld.Shapes.AddSmartArt(Application.SmartArtLayouts("urn:microsoft.com/office/officeart/2008/layout/BendingPictureSemiTransparentText")).SmartArt
+    
+    sm.Parent.Visible = False
     
     Dim i As Integer
     
@@ -123,11 +144,22 @@ Private Sub convertToSmartArt(vw As View, sld As Slide, shpArr() As Shape)
     
     
     ' Error handler to manage Active Window issues
+    errCount = 1
     On Error GoTo convertToSmartArtTimingErr:
+    
+    ' Show progress bar
+    Dim pb As ProgressForm
+    Set pb = New ProgressForm
+
+    pb.PicCount = UBound(shpArr)
+    pb.Show False
     
     ' Loop through the array of shapes and add the pictures to SmartArt nodes
     For i = 1 To UBound(shpArr)
     
+        ' Update progress bar
+        pb.CurrentPic = i
+        
         ' Copy the shape to clipboard
         shpArr(i).Copy
         
@@ -157,26 +189,64 @@ Private Sub convertToSmartArt(vw As View, sld As Slide, shpArr() As Shape)
         CommandBars.ExecuteMso ("PictureFitCrop")
         DoEvents
         
-        'Remove border from the picture placeholder
+        ' Remove border from the picture placeholder
         nd.Shapes(2).Line.Transparency = 1
         
-        'Hide the border and fill for the textbox
+        ' Hide the border and fill for the textbox
         nd.Shapes(1).Fill.Transparency = 1
         nd.Shapes(1).Line.Transparency = 1
         
     Next
     
+    ' Close progress bar
+    Unload pb
+    Set pb = Nothing
+    
+
     ' Rename the SmartArt object to "Auto-Diagram"
     sm.Parent.Name = "Auto-Diagram"
     
     ' Select the new SmartArt
+    sm.Parent.Visible = True
+    
     sm.Parent.Select
     
     Exit Sub
 
 convertToSmartArtTimingErr:
-    ' This error handler processes some errors which crop up due to executing timing mismatches
+    ' This error handler processes some errors which crop up due to executing timing mismatches.
     ' We have not found a way to handle these errors in any other way.
+    ' Therefore, we have implemented a circuit breaker which stops the process after a large
+    ' number of errors.
+    
+    errCount = errCount + 1
+    If errCount > MAXERRORS Then
+        ' Revert original state
+        
+        ' Close progress bar if open
+        If Not pb Is Nothing Then
+            Unload pb
+            Set pb = Nothing
+        End If
+        
+        ' Remove the smartart
+        Dim sh As Shape
+        Set sh = sm.Parent
+        sh.Delete
+        
+        ' Unhide processed pictures
+        Dim j As Integer
+        For j = 1 To i
+            sld.Shapes(j).Visible = msoTrue
+        Next
+        
+        MsgBox "We are sorry. Due to errors beyond our control, the process could not be completed." & vbCrLf & _
+                "We have reverted your slide to what it was before the process." & vbCrLf & _
+                "The process may work if you try again."
+        
+        Exit Sub
+    End If
+    
     DoEvents
     Resume
 End Sub
@@ -236,3 +306,5 @@ Private Sub arrayInsert(aShps() As Shape, shp As Shape)
 End Sub
 
 'End of code
+
+
