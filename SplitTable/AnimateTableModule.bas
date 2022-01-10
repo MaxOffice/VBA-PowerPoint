@@ -1,5 +1,7 @@
-Attribute VB_Name = "SplitTableModule"
+Attribute VB_Name = "AnimateTableModule"
 Option Explicit
+
+Private Const MACROTITLE As String = "Animate Table"
 
 Public Sub AnimateTable()
     
@@ -37,6 +39,18 @@ Public Sub AnimateTable()
         Exit Sub
     End If
     
+    If ActiveWindow.ViewType <> ppViewNormal And ActiveWindow.ViewType <> ppViewSlide Then
+        MsgBox "Please switch to normal or slide view." & vbCrLf & _
+                "Select only and exactly one table, and try again.", vbExclamation, MACROTITLE
+        Exit Sub
+    End If
+    
+    ' Check if the slide pane is active (not the thumnail or any other pane)
+    If Not ActiveWindow.ActivePane.ViewType = ppViewSlide Then
+        MsgBox "Select only and exactly one table, and try again.", vbExclamation, MACROTITLE
+        Exit Sub
+    End If
+    
     ' Check if the selection is exactly one table shape.
     ' If not, show message and exit. Else, process it.
     
@@ -44,13 +58,13 @@ Public Sub AnimateTable()
     
         'table is a shape. But if table is being edited, selection is text
         If .Type <> ppSelectionShapes And .Type <> ppSelectionText Then
-            MsgBox "Select only and exactly one table, and try again", vbExclamation, "Split Table"
+            MsgBox "Select only and exactly one table, and try again", vbExclamation, MACROTITLE
             Exit Sub
         End If
 
         'if multiple shapes are selected, exit
         If .ShapeRange.Count <> 1 Then
-            MsgBox "Select only and exactly one table, and try again", vbExclamation, "Split Table"
+            MsgBox "Select only and exactly one table, and try again", vbExclamation, MACROTITLE
             Exit Sub
         End If
 
@@ -61,7 +75,7 @@ Public Sub AnimateTable()
         
         If selectedShape.HasTable <> msoTrue Then
             MsgBox "The selection does not seem to be a table." & vbCrLf & _
-                   "Select only and exactly one table, and try again", vbExclamation, "Split Table"
+                   "Select only and exactly one table, and try again", vbExclamation, MACROTITLE
             Exit Sub
         End If
         
@@ -72,7 +86,8 @@ Public Sub AnimateTable()
                 MsgBox "This table has only one row and column." & vbCrLf & _
                         "Cannot split this table further." & vbCrLf & _
                         "Just add animation to the table as desired.", _
-                        vbInformation, "Split Table"
+                        vbInformation, MACROTITLE
+                Exit Sub
             End If
             
         End With
