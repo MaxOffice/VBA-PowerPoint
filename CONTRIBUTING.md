@@ -1,0 +1,41 @@
+# VBA-PowerPoint Contribution Guide
+
+## Concepts
+
+### Packages
+
+A _package_ provides some unique features, and is represented by a directory under the `pakckages` directory in this repository. Packages may contain VBA modules, class modules, and userforms.
+
+### Actions
+
+An _action_ is a feature provided by a package, which can be invoked from the `Macros` dialog. Actions are implemented in VBA as `Public Sub` routines, with no parameters.
+
+### APIs
+
+An _api_ is a feature provided by a package, which can be invoked from VBA code. APIs are implemented in VBA as `Public Function` or `Public Sub` routines, with at least one parameter.
+
+
+## Adding a new package
+
+1. Create a new subdirectory for your package under the `packages` directory. Give it a unique name.
+2. Create a subdirectory called `Tests` under the package directory.
+3. Create a .PPTM file under `Tests`. This will be your dev/test environment.
+4. Add you functionality to the .PPTM file, following the guidelines below.
+5. Be sure to include test cases in the .PPTM. Include one case per slide.
+6. Once all code has been tested, export your modules (`.bas` files), class modules (`.cls` files) and userforms (`.frm` and `.frx` files) to the package directory.
+
+## Coding Guidelines
+
+### Mandatory guidelines
+
+1. All UserForm and Module members (varibles, constants, `Sub`s, `Function`s) must be `Private` by default. Class modules must have their `Instancing` property set to `1 - Private` by default.
+2. A package may provide one or more _actions_. These must be declared as `Public Sub` routines in Modules, with a "PascalCased" name. Action subroutines should ideally handle all errors, and provide appropriate error messages.
+3. A package may provide one or more _apis_. These must be declared as `Public Function` or `Public Sub` routines in Modules, with a "PascalCased" name. API subroutines should raise errors if needed, and not handle everything. If an API returns a Class type, or takes a Class type as a parameter, the relevant Class Module must have the `Instancing` property set to `2 - PublicNotCreatable`.
+4. All `MsgBox` calls should include a title parameter, identifying the package which raised the message.
+
+### Naming Conventions
+
+1. `Public` functions and subroutines must be named using "PascalCase".
+2. All other members should be named using "camelCase".
+3. Module, Class Module and Form names should be in "PascalCase". Form names should end with the word `Form`.
+4. The primary action subroutine should have the same name as the package directory.

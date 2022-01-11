@@ -2,7 +2,7 @@
 
 VBA Macros for PowerPoint
 
-This repository contains useful macros for PowerPoint. The macros are organized into _packages_. Each subdirectory in this repository contains an independent package. Each package directory also has a `Tests` subdirectory, which contains a .PPTM which has test cases and usage instructions for the package, as well as the package code. 
+This repository contains useful macros for PowerPoint. The macros are organized into _packages_. Each subdirectory under the `packages` directory in this repository contains an independent package. Each package directory also has a `Tests` subdirectory, which contains a .PPTM which has test cases and usage instructions for the package, as well as the package code.
 
 ## Using these macros
 
