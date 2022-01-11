@@ -14,7 +14,7 @@ This repository contains useful macros for PowerPoint. The macros are organized 
 
 ### To use all packages
 
-1. Download the [Maxoffice-PowerPoint-Macros-Collection.pptm](https://github.com/MaxOffice/VBA-PowerPoint/releases/latest/Maxoffice-PowerPoint-Macros-Collection.pptm) file from the [latest release](https://github.com/MaxOffice/VBA-PowerPoint/releases/latest).
+1. Download the Maxoffice-PowerPoint-Macros-Collection.pptm file from the [latest release](https://github.com/MaxOffice/VBA-PowerPoint/releases/latest).
 2. Open it, remembering to enable macro content.
 3. Invoke any macro from the Macros dialog available via the View ribbon tab.
 
