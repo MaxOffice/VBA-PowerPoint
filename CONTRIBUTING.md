@@ -1,6 +1,18 @@
 # VBA-PowerPoint Contribution Guide
 
-## Concepts
+## Welcome
+
+Thank you for your interest in VBA Macros for PowerPoint. This guide will help if you want to contribute your own macros to this collection.
+
+We follow a few rules while maintaining this repository. The principal rule is: development happens in the `development` branch. The `main` branch merges directly from `development`, and tags and releases happen from `main`. So, if you want to work on this:
+
+1. Fork this repository.
+2. Do your work on the `development` branch.
+3. When you are ready, raise a pull request.
+
+We have a few processes and coding guidelines. These, along with some terminology we have used to define them, are listed below. 
+
+## Terminology used in this guide
 
 ### Packages
 
@@ -14,8 +26,14 @@ An _action_ is a feature provided by a package, which can be invoked from the `M
 
 An _api_ is a feature provided by a package, which can be invoked from VBA code. APIs are implemented in VBA as `Public Function` or `Public Sub` routines, with at least one parameter.
 
+### "should" and "must"
 
-## Adding a new package
+In the processes and guidelines below, the terms "should" and "must" have the expected meaning. We will send any pull request that violates a "must" guideline back for review, whereas "should" guideline violations may in some cases be accepted as is.
+
+
+## Processes
+
+### Adding a new package
 
 1. Create a new subdirectory for your package under the `packages` directory. Give it a unique name.
 2. Create a subdirectory called `Tests` under the package directory.
