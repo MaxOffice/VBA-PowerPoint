@@ -134,6 +134,7 @@ Private Sub animPicMain(vw As View, sld As Slide, aShps() As Shape)
     Dim pb As ProgressForm
     Set pb = New ProgressForm
     pb.Caption = MACROTITLE
+    pb.PicCount = UBound(aShps)
     pb.Show False
     
     ' Iterate images array
@@ -158,8 +159,11 @@ Private Sub animPicMain(vw As View, sld As Slide, aShps() As Shape)
                 Set xe = sld.TimeLine.MainSequence.AddEffect(aShps(ff - 1), msoAnimEffectAppear, , msoAnimTriggerWithPrevious)
                 xe.Exit = True
             
+            
         End If 'ff>1
     
+        DoEvents
+        
     Next 'ff = 1 to cnt
     
     ' Close progress bar
