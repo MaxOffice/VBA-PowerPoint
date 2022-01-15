@@ -4,3 +4,5 @@
 ~$*.doc*
 ~$*.xls*
 
+# output directories
+out/

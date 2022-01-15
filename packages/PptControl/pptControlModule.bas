@@ -88,7 +88,7 @@ Public Sub PresentCurrentSlide()
     
 End Sub
 
-Public Sub EndAllPpt()
+Public Sub EndAllShows()
     
     ' Stops all running slide shows
     
@@ -113,36 +113,5 @@ Public Sub EndAllPpt()
     
 End Sub
 
-Public Sub CloseAllPpt()
-    
-    ' Close all presentations except
-    ' this presentation
-    
-    Dim keepOpen As String
-    Dim f As Integer
-    Dim pres As Presentation
-    
-    ' This presentation
-    keepOpen = "multi-presentation-controller.pptm"
-    
-    With Application
-    
-        ' Iterate open presentations
-        Do While .Presentations.Count > 1
-        
-            For Each pres In .Presentations
-                            
-                If Not pres.Name = keepOpen Then
-                
-                    pres.Close
-                
-                End If
-                
-            Next
-        
-        Loop
- 
-    End With
 
-End Sub
 

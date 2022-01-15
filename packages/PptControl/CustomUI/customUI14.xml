@@ -1,0 +1,12 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+	<ribbon startFromScratch="false">
+		<tabs>
+			<tab idMso="TabAddIns">
+				<group id="mocg" label="MaxOffice Toolkit">
+					<button id="moRunSlide" label="Run current slide" image="nit-RunCurrentSlide" size="large" onAction="PresentCurrentSlide" supertip = "Run the currently selected slide. Works in Normal, Slide Sorter and Thumbnail View." />
+					<button id="moStopAllShows" label="Stop All Shows" image="nit-CloseAllSlideShows" size="large" onAction="EndAllShows" supertip = "Use this option to Stop all running presentations in one click. Does not close the presentation files."  />
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>

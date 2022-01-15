@@ -1,0 +1,11 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+	<ribbon startFromScratch="false">
+		<tabs>
+			<tab idMso="TabAddIns">
+				<group id="mocg" label="MaxOffice Toolkit">
+					<button id="moAnimTable" label="Animate Table" image="nit-animatetable" size="large" onAction="AnimateTable" supertip = "Select a table and run this macro. Each cell is separated and animated. It is still editable. Formatting is copied from the original table. The original table is hidden." />
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>
