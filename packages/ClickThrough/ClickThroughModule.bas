@@ -65,7 +65,7 @@ Public Sub AnimatePics()
         Exit Sub
     End If
         
-    On Error GoTo 0
+
         
     ' Set current view for copy pasting shapes later
     Set vw = ActiveWindow.View
@@ -80,6 +80,11 @@ Public Sub AnimatePics()
         MsgBox "Select at least two pictures on a slide and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
+    
+    ' At this point, the presence of a window and a selection is established
+    ' So we turn the selection error handler off. This way, we can get to
+    ' know about errors we have not thought of.
+    On Error GoTo 0
     
     ' Check each selected item to see if it is a picture or graphic
     ' Only if more than two picture / graphic items are found, the macro works
@@ -117,7 +122,7 @@ Public Sub AnimatePics()
     Exit Sub
     
 ArrangePicsSelectionErr:
-    MsgBox "Please switch to normal or slide view." & vbCrLf & _
+    MsgBox "Please switch to normal or slide view in any presentation." & vbCrLf & _
             "Select at least two pictures on a slide and try again.", vbExclamation, MACROTITLE
 End Sub
 
