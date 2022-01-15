@@ -2,6 +2,8 @@ Attribute VB_Name = "pptControlModule"
 Option Explicit
 Option Base 1
 
+Private Const MACROTITLE As String = "Animate Table"
+
 Public Sub PresentCurrentSlide()
 
     ' Created by Dr Nitin Paranjape on 13 Aug 2021
@@ -39,8 +41,13 @@ Public Sub PresentCurrentSlide()
     Dim isrunning As Boolean
     
     
+    
     'Running slide show flag
     isrunning = False
+    
+    ' Error handler in case this is run from an Add-in, and
+    ' no presentation is currently selected
+    On Error GoTo PresentCurrentSlideSelectionErr:
     
     Set ap = ActivePresentation
     
@@ -67,6 +74,11 @@ Public Sub PresentCurrentSlide()
     sldx = ActiveWindow.View.Slide.SlideIndex
     Set ap = ActiveWindow.Presentation
     
+    ' At this point, the presence of a window and a selection is established
+    ' So we turn the selection error handler off. This way, we can get to
+    ' know about errors we have not thought of.
+    On Error GoTo 0
+    
     'Check slideshow is running for the active presentation in edit mode
     
     If isrunning Then
@@ -84,7 +96,12 @@ Public Sub PresentCurrentSlide()
        CommandBars.ExecuteMso "SlideShowFromCurrent"
        
     End If 'isrunning
-    
+    Exit Sub
+PresentCurrentSlideSelectionErr:
+    MsgBox "Please select a slide in the normal view in any presentation, and try again", _
+            vbExclamation, _
+            MACROTITLE
+            
     
 End Sub
 

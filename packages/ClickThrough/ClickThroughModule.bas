@@ -131,8 +131,8 @@ Private Sub animPicMain(vw As View, sld As Slide, aShps() As Shape)
     
     
     ' Show progress bar (non modal)
-    Dim pb As ProgressForm
-    Set pb = New ProgressForm
+    Dim pb As CTProgressForm
+    Set pb = New CTProgressForm
     pb.Caption = MACROTITLE
     pb.PicCount = UBound(aShps)
     pb.Show False

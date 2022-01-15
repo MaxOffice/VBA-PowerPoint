@@ -1,19 +1,20 @@
 VERSION 5.00
-Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ProgressForm 
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} CTProgressForm 
    Caption         =   "Working ..."
    ClientHeight    =   870
-   ClientLeft      =   2115
+   ClientLeft      =   2120
    ClientTop       =   2460
-   ClientWidth     =   4575
-   OleObjectBlob   =   "ProgressForm.frx":0000
+   ClientWidth     =   4570
+   OleObjectBlob   =   "CTProgressForm.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
 End
-Attribute VB_Name = "ProgressForm"
+Attribute VB_Name = "CTProgressForm"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 
 Option Explicit
 Option Base 1

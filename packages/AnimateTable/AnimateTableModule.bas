@@ -30,6 +30,8 @@ Public Sub AnimateTable()
     'do nothing and exit.
     
     
+    On Error GoTo AnimateTableSelectionErr:
+    
     'check if anything is selected
     If ActiveWindow Is Nothing Then
         Exit Sub
@@ -50,6 +52,11 @@ Public Sub AnimateTable()
         MsgBox "Select only and exactly one table, and try again.", vbExclamation, MACROTITLE
         Exit Sub
     End If
+    
+    ' At this point, the presence of a window and a selection is established
+    ' So we turn the selection error handler off. This way, we can get to
+    ' know about errors we have not thought of.
+    On Error GoTo 0
     
     ' Check if the selection is exactly one table shape.
     ' If not, show message and exit. Else, process it.
@@ -99,7 +106,10 @@ Public Sub AnimateTable()
         selectedShape.Visible = msoFalse
     
     End With
-
+    Exit Sub
+AnimateTableSelectionErr:
+    MsgBox "Please switch to normal or slide view in any presentation." & vbCrLf & _
+            "Select only and exactly one table, and try again.", vbExclamation, MACROTITLE
 End Sub
 
 Private Sub explodeTable(ByVal tbl As Table)
