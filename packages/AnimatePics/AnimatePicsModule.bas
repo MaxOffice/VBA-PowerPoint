@@ -1,4 +1,4 @@
-Attribute VB_Name = "ClickThroughModule"
+Attribute VB_Name = "AnimatePicsModule"
 Option Explicit
 Option Base 1
 
