@@ -11,7 +11,7 @@ param(
     # Output file name, without extension
     [Parameter(Mandatory = $false)]
     [string]
-    $OutFileName = "Maxoffice-PowerPoint-Macros-Collection",
+    $OutFileName = "MPMC",
     # The directory where the output file will be created
     [string]
     $OutPath = "..\out\",
@@ -20,8 +20,6 @@ param(
     [string]
     $PackagesPath = "../packages"
 )
-
-
 
 function ensureDirectory {
     param (
@@ -33,7 +31,7 @@ function ensureDirectory {
 
     $outdirexists = (Test-Path -PathType Container $OutPath)
     if ($outdirexists -eq $false) {
-        New-Item -ItemType Directory -Force -Path $OutPath
+        [void] (New-Item -ItemType Directory -Force -Path $OutPath)
     }
 }
 
@@ -88,29 +86,42 @@ function Build-PPTFile {
     # Store the paths in an array
     $packagepaths = ($packagedirs | ForEach-Object { $_.FullName })
 
-    $mcx = [xml]@"
-    <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
-    <ribbon startFromScratch="false">
-    <tabs>
-    </tabs>
-    </ribbon>
-    </customUI>
-"@
-
-    $packagepaths | ForEach-Object {
-        processPackageDir $_ $mcx
+    if($packagepaths.Count -eq 0) {
+        Write-Output "No packages selected. Not doing anything"
+        return
     }
 
-    Write-Host "Resulting XML is: $($mcx.InnerXml)"
+    # Check output path and create if needed
+    if (-not [System.IO.Path]::IsPathRooted($OutPath)) {
+        $OutPath = Join-Path -Path $PWD -ChildPath $OutPath
+    }
+    
+    ensureDirectory $OutPath
 
-    return
+    # createPPTFile -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName -Generate $Generate
+
+    consolidateCustomUI -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName     
+}
+
+function createPPTFile {
+    param (
+        $packagePaths,
+        $OutPath,
+        $OutFileName,
+        $Generate
+    )
 
     ### Create PowerPoint Document/AddIn file
 
     # Create PowerPoint object
-    $ppa = New-Object -ComObject PowerPoint.Application
+    try {
+        $ppa = New-Object -ComObject PowerPoint.Application
     
-    $newPpt = $ppa.Presentations.Add($false)
+        $newPpt = $ppa.Presentations.Add($false)
+    }
+    catch {
+        Write-Error "PowerPoint does not seem to be available." -ErrorAction Stop
+    }
     
     try {
         # Try to get the VBA project object.
@@ -122,7 +133,7 @@ function Build-PPTFile {
             Write-Error "Access to VBA Object Model not trusted. Please check the Trust Access to the VBA Object model checkbox in the PowerPoint Trust Centre." -ErrorAction Stop
         }
     
-        $packagepaths | ForEach-Object {
+        $packagePaths | ForEach-Object {
             $packagepathspec = "$PSItem\*"
             $basfiles = (Get-ChildItem -Path $packagepathspec -Include *.bas, *.frm, *.cls)
             $basfiles | ForEach-Object {
@@ -136,14 +147,7 @@ function Build-PPTFile {
                 #}        
             }
         }
-    
-        # Check output path and create if needed
-        if (-not [System.IO.Path]::IsPathRooted($OutPath)) {
-            $OutPath = Join-Path -Path $PWD -ChildPath $OutPath
-        }
-    
-        ensureDirectory $OutPath
-    
+        
         if ($Generate -eq "Presentation") {
             $savefileFullName = (Join-Path -Path $OutPath -ChildPath $OutFileName)
             # 25 = ppSaveAsOpenXMLPresentationMacroEnabled
@@ -166,17 +170,89 @@ function Build-PPTFile {
     ### End Create PowerPoint Document/AddIn file
 }
 
-function processPackageDir {
+function consolidateCustomUI {
+    param (
+        $packagePaths,
+        $OutPath,
+        $OutFileName
+    )
+
+    $customUIOutPath = Join-Path $OutPath "$OutFileName.UI"
+    if (Test-Path $customUIOutPath) {
+        Remove-Item $customUIOutPath -Force -Recurse
+    }
+ 
+    ensureDirectory $customUIOutPath
+
+    $customUIImagesPath = Join-Path $customUIOutPath "images"
+    ensureDirectory $customUIImagesPath
+
+    $customUIFilePath = Join-Path $customUIOutPath "customUI14.xml"
+
+    $mcx = [xml]@"
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+<ribbon startFromScratch="false">
+<tabs>
+</tabs>
+</ribbon>
+</customUI>
+"@
+
+    $packagePaths | ForEach-Object {
+        processPackageCustomUI -packageDir $_ -mergedCuiXML $mcx -outImagesDir $customUIImagesPath
+    }
+
+    $tabCount = ($mcx | Select-Xml "//cui:tabs/cui:tab" -Namespace @{cui = "http://schemas.microsoft.com/office/2009/07/customui" } ).Count
+    if ($tabCount -gt 0) {
+        $mcx.Save($customUIFilePath)
+    }
+
+    processImageRels $mcx @{cui="http://schemas.microsoft.com/office/2009/07/customui"} $customUIOutPath
+}
+
+function  processImageRels {
+    param (
+        [xml]
+        $mergedCuiXml,
+        $cuins,
+        $OutPath
+    )
+    
+    $relsDir = Join-Path $OutPath "_rels"
+    ensureDirectory $relsDir
+    $relsFilePath = Join-Path $relsDir "customUI14.xml.rels"
+
+    $relsnsurn = "http://schemas.openxmlformats.org/package/2006/relationships"
+    
+    $relsXML = [xml]"<Relationships xmlns='$relsnsurn'></Relationships>"
+   
+    $buttons = $mergedCuiXml | Select-Xml "//cui:button" -Namespace $cuins
+    $buttons | ForEach-Object {
+        $currentButton = $_.Node
+
+        $newNode = $relsXML.CreateElement("Relationship", $relsnsurn)
+        $newNode.SetAttributeNode("Type", "").Value = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
+        $newNode.SetAttributeNode("Target", "").Value = "images/$($currentButton.image).png"
+        $newNode.SetAttributeNode("Id", "").Value = $currentButton.image
+        [void] $relsXML.DocumentElement.AppendChild($newNode)
+    }
+
+    [void] $relsXML.Save($relsFilePath)
+}
+
+function processPackageCustomUI {
     param (
         [string]
         $packageDir,
         [xml]
-        $mergedCuiXML
+        $mergedCuiXML,
+        $outImagesDir
     )
     
     # Check whether there is a file called customUI14.xml in 
     # a subdirectory called CustomUI in the package directory
-    $cuifilePath = Join-Path $packageDir "CustomUI\customUI14.xml"
+    $cuiDir = Join-Path $packageDir "CustomUI"
+    $cuifilePath = Join-Path $cuiDir "customUI14.xml"
     $cuiExists = Test-Path $cuifilePath
     if (-not $cuiExists) {
         Write-Output "No customUI in $cuifilePath"
@@ -215,18 +291,11 @@ function processPackageDir {
         if ("" -eq $imagename) {
             return
         }
-        $imagepath = Join-Path $packageDir "CustomUI\$imagename.png"
+        $imagepath = Join-Path $cuiDir "$imagename.png"
         if (-not (Test-Path $imagepath)) {
             Write-Error "Image $imagepath not present in $packageDir." -ErrorAction Stop
         }
     }
-
-    # Debug
-    # Write-Output "Validations passed."
-    # if($null -eq $mergedCuiXML) {
-    #     return
-    # }
-    # End Debug
 
     # Iterate tabs
     $tabs = ($cuiXML | Select-Xml "//cui:tabs/cui:tab" -Namespace $cuins)
@@ -234,6 +303,9 @@ function processPackageDir {
         # Write-Output "Processing tab '$($_.Node.idMso)'"
         processTab -currentTab $_.Node -mergedCuiXML $mergedCuiXML -cuins $cuins
     }
+
+    # Copy images
+    [void] (Copy-Item "$cuiDir\*png" -Destination $outImagesDir -Force)
 }
 
 function processTab {
