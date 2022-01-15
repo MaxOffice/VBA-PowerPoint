@@ -98,9 +98,60 @@ function Build-PPTFile {
     
     ensureDirectory $OutPath
 
-    # createPPTFile -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName -Generate $Generate
+    
+    Write-Output "Creating $Generate named $OutFileName..."
+    createPPTFile -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName -Generate $Generate
 
-    consolidateCustomUI -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName     
+    Write-Output "Consolidating CustomUI for $Generate $OutFileName"
+    consolidateCustomUI -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName
+
+    Write-Output "Done. For now, use a custom ui editor to insert the custom UI."
+    # mergeUI -OutFileName $OutFileName -OutPath $OutPath -Generate $Generate
+}
+
+function mergeUI {
+    param (
+        $OutFileName,
+        $OutPath,
+        $Generate
+    )
+    
+    if($Generate -eq "AddIn") {
+        $extension = ".ppam"
+    } else {
+        $extension = ".pptm"
+    }
+
+    $pptfilename = Join-Path $OutPath "$($OutFileName)$extension"
+    $pptzipfilename = "$pptfilename.zip"
+    $expanddir = "$pptfilename.d"
+
+    Remove-Item $pptzipfilename -Force -ErrorAction Ignore
+    Remove-Item $expanddir -Recurse -Force -ErrorAction Ignore
+    
+
+    Move-Item $pptfilename $pptzipfilename
+    Expand-Archive $pptzipfilename -DestinationPath $expanddir -ErrorAction Stop
+    Remove-Item $pptzipfilename -Force -ErrorAction Ignore
+    
+    $cuiDir = Join-Path $OutPath "$OutFileName.UI"
+    Move-Item $cuiDir -Destination "$expanddir\customUI"
+
+    $relsFilePath = "$expanddir\_rels\.rels"
+    $relsXML = [xml](Get-Content $relsFilePath)
+
+    $relsnsurn = "http://schemas.openxmlformats.org/package/2006/relationships"
+    $newNode = $relsXML.CreateElement("Relationship", $relsnsurn)
+    $newNode.SetAttributeNode("Type", "").Value = "http://schemas.microsoft.com/office/2007/relationships/ui/extensibility"
+    $newNode.SetAttributeNode("Target", "").Value = "/customUI/customUI14.xml"
+    $newNode.SetAttributeNode("Id", "").Value = "R" + [string](Get-Random)
+    [void] $relsXML.DocumentElement.AppendChild($newNode)
+
+    Set-Content $relsFilePath $relsXML.InnerXml
+    
+    Compress-Archive $expanddir $pptzipfilename -ErrorAction Stop
+
+    Move-Item $pptzipfilename $pptfilename
 }
 
 function createPPTFile {
@@ -207,7 +258,7 @@ function consolidateCustomUI {
         $mcx.Save($customUIFilePath)
     }
 
-    processImageRels $mcx @{cui="http://schemas.microsoft.com/office/2009/07/customui"} $customUIOutPath
+    # processImageRels $mcx @{cui="http://schemas.microsoft.com/office/2009/07/customui"} $customUIOutPath
 }
 
 function  processImageRels {
@@ -224,7 +275,7 @@ function  processImageRels {
 
     $relsnsurn = "http://schemas.openxmlformats.org/package/2006/relationships"
     
-    $relsXML = [xml]"<Relationships xmlns='$relsnsurn'></Relationships>"
+    $relsXML = [xml]"<?xml version=`"1.0`" encoding=`"UTF-8`" standalone=`"yes`"?><Relationships xmlns='$relsnsurn'></Relationships>"
    
     $buttons = $mergedCuiXml | Select-Xml "//cui:button" -Namespace $cuins
     $buttons | ForEach-Object {
@@ -237,7 +288,7 @@ function  processImageRels {
         [void] $relsXML.DocumentElement.AppendChild($newNode)
     }
 
-    [void] $relsXML.Save($relsFilePath)
+    Set-Content $relsFilePath $relsXML.InnerXml
 }
 
 function processPackageCustomUI {
