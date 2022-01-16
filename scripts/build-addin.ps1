@@ -86,7 +86,7 @@ function Build-PPTFile {
     # Store the paths in an array
     $packagepaths = ($packagedirs | ForEach-Object { $_.FullName })
 
-    if($packagepaths.Count -eq 0) {
+    if ($packagepaths.Count -eq 0) {
         Write-Output "No packages selected. Not doing anything"
         return
     }
@@ -99,14 +99,16 @@ function Build-PPTFile {
     ensureDirectory $OutPath
 
     
-    Write-Output "Creating $Generate named $OutFileName..."
+    Write-Output "Creating $Generate named $OutFileName and merging package modules..."
     createPPTFile -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName -Generate $Generate
 
-    Write-Output "Consolidating CustomUI for $Generate $OutFileName"
+    Write-Output "Consolidating CustomUI for $Generate $OutFileName..."
     consolidateCustomUI -packagePaths $packagepaths -OutPath $OutPath -OutFileName $OutFileName
 
-    Write-Output "Done. For now, use a custom ui editor to insert the custom UI."
-    # mergeUI -OutFileName $OutFileName -OutPath $OutPath -Generate $Generate
+    Write-Output "Merging custom UI into $Generate $OutFileName..."
+    mergeUI -OutFileName $OutFileName -OutPath $OutPath -Generate $Generate
+
+    Write-Output "Done."
 }
 
 function mergeUI {
@@ -116,9 +118,10 @@ function mergeUI {
         $Generate
     )
     
-    if($Generate -eq "AddIn") {
+    if ($Generate -eq "AddIn") {
         $extension = ".ppam"
-    } else {
+    }
+    else {
         $extension = ".pptm"
     }
 
@@ -137,21 +140,49 @@ function mergeUI {
     $cuiDir = Join-Path $OutPath "$OutFileName.UI"
     Move-Item $cuiDir -Destination "$expanddir\customUI"
 
+    # Edit the main rels file of the OpenOfficeXML document
+    # to include the custom UI
     $relsFilePath = "$expanddir\_rels\.rels"
     $relsXML = [xml](Get-Content $relsFilePath)
 
     $relsnsurn = "http://schemas.openxmlformats.org/package/2006/relationships"
     $newNode = $relsXML.CreateElement("Relationship", $relsnsurn)
+    $newNode.SetAttributeNode("Id", "").Value = "R" + [string](Get-Random)
     $newNode.SetAttributeNode("Type", "").Value = "http://schemas.microsoft.com/office/2007/relationships/ui/extensibility"
     $newNode.SetAttributeNode("Target", "").Value = "/customUI/customUI14.xml"
-    $newNode.SetAttributeNode("Id", "").Value = "R" + [string](Get-Random)
+    
     [void] $relsXML.DocumentElement.AppendChild($newNode)
 
-    Set-Content $relsFilePath $relsXML.InnerXml
+    Set-Content $relsFilePath $relsXML.InnerXml.Replace("?>", "?>`n")
+
+    # Edit content-types file of the OpenOfficeXML document
+    # to include png files if not already present.
+    # Square brackets are tricky in PowerShell, so all operations
+    # on this file will use the -LiteralPath parameter.
+    $ctFilePath = "$expanddir\[Content_Types].xml"    
+    $ctXML = [xml](Get-Content -LiteralPath $ctFilePath)
+
+    $ctnsurn = "http://schemas.openxmlformats.org/package/2006/content-types"
+    $ctns = @{ct = $ctnsurn }
+
+    $pngNode = ($ctXML | Select-Xml "/ct:Types/ct:Default[Extension='png']" -Namespace $ctns)
+
+    if ($null -eq  $pngNode) {
+        
+        $newNode = $ctXML.CreateElement("Default", $ctnsurn)
+        $newNode.SetAttributeNode("Extension", "").Value = "png"
+        $newNode.SetAttributeNode("ContentType", "").Value = "image/png"
     
-    Compress-Archive $expanddir $pptzipfilename -ErrorAction Stop
+        [void] $ctXML.DocumentElement.AppendChild($newNode)
+
+        Set-Content -LiteralPath $ctFilePath $ctXML.InnerXml.Replace("?>", "?>`n")
+    }
+
+    Compress-Archive "$expanddir\*" $pptzipfilename -ErrorAction Stop
 
     Move-Item $pptzipfilename $pptfilename
+
+    Remove-Item $expanddir -Recurse -Force -ErrorAction Ignore
 }
 
 function createPPTFile {
@@ -258,7 +289,7 @@ function consolidateCustomUI {
         $mcx.Save($customUIFilePath)
     }
 
-    # processImageRels $mcx @{cui="http://schemas.microsoft.com/office/2009/07/customui"} $customUIOutPath
+    processImageRels $mcx @{cui = "http://schemas.microsoft.com/office/2009/07/customui" } $customUIOutPath
 }
 
 function  processImageRels {
@@ -275,16 +306,17 @@ function  processImageRels {
 
     $relsnsurn = "http://schemas.openxmlformats.org/package/2006/relationships"
     
-    $relsXML = [xml]"<?xml version=`"1.0`" encoding=`"UTF-8`" standalone=`"yes`"?><Relationships xmlns='$relsnsurn'></Relationships>"
+    $relsXML = [xml]"<?xml version=`"1.0`" encoding=`"UTF-8`" standalone=`"yes`"?>`n<Relationships xmlns='$relsnsurn'></Relationships>"
    
     $buttons = $mergedCuiXml | Select-Xml "//cui:button" -Namespace $cuins
     $buttons | ForEach-Object {
         $currentButton = $_.Node
 
         $newNode = $relsXML.CreateElement("Relationship", $relsnsurn)
+        $newNode.SetAttributeNode("Id", "").Value = $currentButton.image
         $newNode.SetAttributeNode("Type", "").Value = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
         $newNode.SetAttributeNode("Target", "").Value = "images/$($currentButton.image).png"
-        $newNode.SetAttributeNode("Id", "").Value = $currentButton.image
+        
         [void] $relsXML.DocumentElement.AppendChild($newNode)
     }
 
