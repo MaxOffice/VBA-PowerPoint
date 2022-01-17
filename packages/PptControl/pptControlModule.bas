@@ -2,7 +2,7 @@ Attribute VB_Name = "pptControlModule"
 Option Explicit
 Option Base 1
 
-Private Const MACROTITLE As String = "Animate Table"
+Private Const MACROTITLE As String = "PowerPoint Control"
 
 Public Sub PresentCurrentSlide()
 
@@ -98,7 +98,7 @@ Public Sub PresentCurrentSlide()
     End If 'isrunning
     Exit Sub
 PresentCurrentSlideSelectionErr:
-    MsgBox "Please select a slide in the normal view in any presentation, and try again", _
+    MsgBox "Please select a slide in the normal view in any presentation, and try again.", _
             vbExclamation, _
             MACROTITLE
             
@@ -129,6 +129,3 @@ Public Sub EndAllShows()
     End With
     
 End Sub
-
-
-
