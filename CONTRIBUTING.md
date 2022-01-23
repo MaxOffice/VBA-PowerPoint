@@ -16,7 +16,7 @@ We have a few processes and coding guidelines. These, along with some terminolog
 
 ### Packages
 
-A _package_ provides some unique features, and is represented by a directory under the `pakckages` directory in this repository. Packages may contain VBA modules, class modules, and userforms.
+A _package_ provides some unique features, and is represented by a directory under the `packages` directory in this repository. Packages may contain VBA modules, class modules, and userforms.
 
 ### Actions
 
@@ -25,6 +25,14 @@ An _action_ is a feature provided by a package, which can be invoked from the `M
 ### APIs
 
 An _api_ is a feature provided by a package, which can be invoked from VBA code. APIs are implemented in VBA as `Public Function` or `Public Sub` routines, with at least one parameter.
+
+### Custom UI
+
+_Custom UI_ is ribbon tabs, buttons etc. added via XML files added to Office documents. Custom UI is implemented using a file called `customUI14.xml` in a subdirectory called `CustomUI` under each package directory. If the custom UI includes buttons with cutom images, the image files also must be stored in the `CustomUI` subdirectory. The images must be stored in .png format.
+
+### UIActions
+
+An _UIAction_ is a feature invoked by the click of a button on the ribbon. UIActions are implemented in VBA as `Public Sub` routines with a single parameter of type `IRibbonControl`.
 
 ### "should" and "must"
 
