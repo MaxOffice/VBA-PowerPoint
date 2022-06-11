@@ -88,7 +88,7 @@ Public Sub SectionsToCustomShows()
     
     Exit Sub
 SectionsToCustomShowsSelectionErr:
-    MsgBox "Please select a slide in the normal view in any presentation, and try again.", _
+    MsgBox "Please select any slide in a presentation, and try again.", _
             vbExclamation, _
             MACROTITLE
 End Sub
@@ -151,7 +151,7 @@ Public Sub DeleteAllCustomShows()
     Exit Sub
     
 DeleteAllCustomShowsSelectionErr:
-    MsgBox "Please select a slide in the normal view in any presentation, and try again.", _
+    MsgBox "Please select any slide in a presentation, and try again.", _
             vbExclamation, _
             MACROTITLE
 End Sub
