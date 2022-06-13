@@ -82,7 +82,13 @@ Public Sub PresentCurrentSlide()
     'Check slideshow is running for the active presentation in edit mode
     
     If isrunning Then
+        'check if inside custom show
+        If ap.SlideShowWindow.View.IsNamedShow Then
        
+            ap.SlideShowWindow.View.EndNamedShow
+       
+        End If
+        
        'Change the current slide and activate
        ap.SlideShowWindow.View.GotoSlide sldx, msoTrue
        
@@ -116,14 +122,18 @@ Public Sub EndAllShows()
         ' Iterate running presentations
         
         For f = 1 To .SlideShowWindows.Count
-        
             .SlideShowWindows(1).Activate
-            ' Close slide show
-            .SlideShowWindows(1).View.Exit
+            
+            If .SlideShowWindows(1).View.IsNamedShow Then
+                .SlideShowWindows(1).View.EndNamedShow
+            End If
             
             ' Maximize the base presentation
-            .ActiveWindow.WindowState = ppWindowMaximized
+            .SlideShowWindows(1).Presentation.Windows(1).WindowState = ppWindowMaximized
             
+            ' Close slideshow
+            .SlideShowWindows(1).View.Exit
+                    
         Next
     
     End With
