@@ -1,0 +1,11 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+    <ribbon startFromScratch="false">
+        <tabs>
+        	<tab idMso="TabAddIns">
+				<group id="mocg" label="MaxOffice Toolkit">
+					<button id="moRemoveUnusedLayouts" label="Remove Unused Layouts" image="nit-RemoveLayouts" size="large" onAction="RemoveUnusedLayouts" supertip = "Remove any unused layouts from the slide design masters of the current presentation." />
+				</group>
+			</tab>
+        </tabs>
+    </ribbon>
+</customUI>
