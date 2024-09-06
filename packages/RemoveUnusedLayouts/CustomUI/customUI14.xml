@@ -2,7 +2,7 @@
     <ribbon startFromScratch="false">
         <tabs>
         	<tab idMso="TabAddIns">
-				<group id="mocg" label="MaxOffice Toolkit">
+				<group id="mocgOptimize" label="Optimize">
 					<button id="moRemoveUnusedLayouts" label="Remove Unused Layouts" image="nit-RemoveLayouts" size="large" onAction="RemoveUnusedLayouts" supertip = "Remove any unused layouts from the slide design masters of the current presentation." />
 				</group>
 			</tab>

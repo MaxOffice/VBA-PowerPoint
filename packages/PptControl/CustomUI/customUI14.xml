@@ -2,7 +2,7 @@
 	<ribbon startFromScratch="false">
 		<tabs>
 			<tab idMso="TabAddIns">
-				<group id="mocg" label="MaxOffice Toolkit">
+				<group id="mocgSlideShow" label="Slide Show">
 					<button id="moRunSlide" label="Run current slide" image="nit-RunCurrentSlide" size="large" onAction="PresentCurrentSlide" supertip = "Run the currently selected slide. Works in Normal, Slide Sorter and Thumbnail View." />
 					<button id="moStopAllShows" label="Stop All Shows" image="nit-CloseAllSlideShows" size="large" onAction="EndAllShows" supertip = "Use this option to Stop all running presentations in one click. Does not close the presentation files."  />
 				</group>

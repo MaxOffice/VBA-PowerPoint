@@ -2,7 +2,7 @@
 	<ribbon startFromScratch="false">
 		<tabs>
 			<tab idMso="TabAddIns">
-				<group id="mocg" label="MaxOffice Toolkit">
+				<group id="mocgArrange" label="Arrange">
                     <button id="moAnimPics" label="Animate Pictures" image="nit-clickthrough" size="large" onAction="AnimatePics" supertip = "Select pictures and run this macro. Now you can show each picture on a separate click. Previous picture disappears automatically. Customize the animation as required." />
 				</group>
 			</tab>

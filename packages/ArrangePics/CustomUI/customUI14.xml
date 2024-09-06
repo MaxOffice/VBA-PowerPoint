@@ -2,7 +2,7 @@
 	<ribbon startFromScratch="false">
 		<tabs>
 			<tab idMso="TabAddIns">
-				<group id="mocg" label="MaxOffice Toolkit">
+				<group id="mocgArrange" label="Arrange">
 					<button id="moArrangePics" label="Arrange Pictures" image="nit-arrangePics" size="large" onAction="ArrangePics" supertip = "Select pictures and run this macro to arrange them. SmartArt is created. Resize as required. To reorder, click a picture and use Shift Alt Up or Down arrow" />
 				</group>
 			</tab>

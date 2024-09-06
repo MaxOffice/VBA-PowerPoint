@@ -2,7 +2,7 @@
     <ribbon startFromScratch="false">
         <tabs>
             <tab idMso="TabAddIns">
-                <group id="mocg" label="MaxOffice Toolkit">
+                <group id="mocgSections" label="Sections">
 					<button id="moSectionsToShows" label="Create Custom Shows" image="Sec2Cs" size="large" onAction="SectionsToCustomShows" supertip = "Create custom shows from all sections in presentation." />
 					<button id="moDeleteCustomShows" label="Delete Custom Shows" image="DelAllCs" size="large" onAction="DeleteAllCustomShows" supertip = "Delete all custom shows in presentation."  />
 				</group>

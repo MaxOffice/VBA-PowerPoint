@@ -2,7 +2,7 @@
 	<ribbon startFromScratch="false">
 		<tabs>
 			<tab idMso="TabAddIns">
-				<group id="mocg" label="MaxOffice Toolkit">
+				<group id="mocgArrange" label="Arrange">
 					<button id="moAnimTable" label="Animate Table" image="nit-animatetable" size="large" onAction="AnimateTable" supertip = "Select a table and run this macro. Each cell is separated and animated. It is still editable. Formatting is copied from the original table. The original table is hidden." />
 				</group>
 			</tab>
