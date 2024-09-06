@@ -1,0 +1,12 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+    <ribbon startFromScratch="false">
+        <tabs>
+            <tab idMso="TabAddIns">
+				<group id="mocg" label="MaxOffice Toolkit">
+					<button id="moSplitTextToWords" label="Split Text To Words" image="nit-SplitTextToWords" size="large" onAction="SplitText2Words" supertip = "Split the currently selected Text Box into multiple text boxes by word. Works in Normal View." />
+					<button id="moSplitTextToChars" label="Split Text To Characters" image="nit-SplitTextToChar" size="large" onAction="SplitText2Chars" supertip = "Split the currently selected Text Box into multiple text boxes by character. Works in Normal View."  />
+				</group>
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>
