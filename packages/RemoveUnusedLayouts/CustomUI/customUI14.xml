@@ -3,7 +3,7 @@
         <tabs>
         	<tab idMso="TabAddIns">
 				<group id="mocgOptimize" label="Optimize">
-					<button id="moRemoveUnusedLayouts" label="Remove Unused Layouts" image="nit-RemoveLayouts" size="large" onAction="RemoveUnusedLayouts" supertip = "Remove any unused layouts from the slide design masters of the current presentation." />
+					<button id="moRemoveUnusedLayouts" label="Delete Unused Layouts" image="nit-RemoveLayouts" size="large" onAction="RemoveUnusedLayouts" supertip = "Remove any unused layouts from the slide design masters of the current presentation." />
 				</group>
 			</tab>
         </tabs>

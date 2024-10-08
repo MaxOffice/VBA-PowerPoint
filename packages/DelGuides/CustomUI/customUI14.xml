@@ -3,7 +3,7 @@
         <tabs>
             <tab idMso="TabAddIns">
 				<group id="mocgOptimize" label="Optimize">
-					<button id="moDelGuides" label="Delete All Guides" image="del-guides-icon-v4" size="large" onAction="DelGuides" supertip = "Delete all guides from current presentation. This cannot be undone." />
+					<button id="moDelGuides" label="Delete All Guides" image="nit-DelGuides" size="large" onAction="DelGuides" supertip = "Delete all guides from current presentation. This cannot be undone." />
 				</group>
 			</tab>
         </tabs>
