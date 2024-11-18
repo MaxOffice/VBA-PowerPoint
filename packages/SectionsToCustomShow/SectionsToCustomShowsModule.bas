@@ -17,6 +17,8 @@ Public Sub SectionsToCustomShows()
     
     ' Error handler in case this is run from an Add-in, and
     ' no presentation is currently selected
+    Dim presentationDetected As Boolean
+    
     On Error GoTo SectionsToCustomShowsSelectionErr
     
     Set ap = ActivePresentation
@@ -24,9 +26,7 @@ Public Sub SectionsToCustomShows()
     Set secp = ap.SectionProperties
     
     ' At this point, the presence of an active presentation is established
-    ' So we turn the selection error handler off. This way, we can get to
-    ' know about errors we have not thought of.
-    On Error GoTo 0
+    presentationDetected = True
     
     ' loop through sections
     ' if no sections - error and return
@@ -63,7 +63,12 @@ Public Sub SectionsToCustomShows()
             If sectionSlideCount > 0 Then
                 sectionFirstSlide = .FirstSlide(i)
                 sectionLastSlide = sectionFirstSlide + (sectionSlideCount - 1)
+                
                 showName = .Name(i)
+                ' Custom show names can be maximum 31 characters
+                If Len(showName) > 31 Then
+                    showName = Left$(showName, 27) & Format$(i, "-00#")
+                End If
 
                 ReDim sarr(sectionFirstSlide To sectionLastSlide)
                 
@@ -88,9 +93,14 @@ Public Sub SectionsToCustomShows()
     
     Exit Sub
 SectionsToCustomShowsSelectionErr:
-    MsgBox "Please select any slide in a presentation, and try again.", _
-            vbExclamation, _
-            MACROTITLE
+    If Not presentationDetected Then
+        MsgBox "Please select any slide in a presentation, and try again.", _
+                vbInformation + vbOKOnly, _
+                MACROTITLE
+    Else
+        MsgBox "Error while performing operation: " & Err.Description & vbCrLf & _
+           "Please try again.", vbOKOnly + vbExclamation, MACROTITLE
+    End If
 End Sub
 
 
