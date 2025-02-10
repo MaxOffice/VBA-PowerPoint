@@ -10,10 +10,10 @@ Each subdirectory under the `packages` directory in this repository contains an 
 
 ## Using these macros
 
-### To use as an Excel Add-in (Recommended)
+### To use as an PowerPoint Add-in (Recommended)
 
 1. Download the `MaxOffice-PowerPoint-Macros-Collection.ppam` file from the [latest release](https://github.com/MaxOffice/VBA-PowerPoint/releases/latest).
-2. Enable it from the Excel user interface as an Add-in:
+2. Enable it from the PowerPoint user interface as an Add-in:
     1. Click the **File** tab
     2. Select **Options** (Windows) or **Preferences** (Mac)
     3. Click **Add-ins**

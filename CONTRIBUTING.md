@@ -46,7 +46,7 @@ In the processes and guidelines below, the terms "should" and "must" have the ex
 1. Create a new subdirectory for your package under the `packages` directory. Give it a unique name.
 2. Create a subdirectory called `Tests` under the package directory.
 3. Create a .PPTM file under `Tests`. This will be your dev/test environment.
-4. Add you functionality to the .PPTM file, following the guidelines below.
+4. Add your functionality to the .PPTM file, following the guidelines below.
 5. Be sure to include test cases in the .PPTM. Include one case per slide.
 6. Once all code has been tested, export your modules (`.bas` files), class modules (`.cls` files) and userforms (`.frm` and `.frx` files) to the package directory.
 
