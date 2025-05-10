@@ -1,0 +1,12 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+    <ribbon startFromScratch="false">
+        <tabs>
+            <tab idMso="TabAddIns">
+                <group id="mocgFormat" label="Format">
+                    <button id="moCropCopy" label="Copy Crop Properties" image="CropCopy" size="large" onAction="CropPaintCopy" supertip = "Copy Crop properties of a picture. This includes size and position." />
+                    <button id="moCropPaste" label="Paste Crop Properties" image="CropPaste" size="large" onAction="CropPaintPaste" supertip = "Paste copied Crop properties to selected picture shapes. This includes size and position, and is applied to all selected pictures."  />
+                </group>
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>
