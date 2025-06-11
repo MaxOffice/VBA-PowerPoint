@@ -1,0 +1,11 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+    <ribbon startFromScratch="false">
+        <tabs>
+            <tab idMso="TabAddIns">
+				<group id="mocgSections" label="Sections">
+					<button id="moSelectSlideWithSameLayout" label="Select same layout slides" image="SelSameLayout" size="large" onAction="SelectSlidesWithSameLayout" supertip = "Select all slides that have the same layout as the currently selected slide." />
+				</group>
+			</tab>        
+        </tabs>
+    </ribbon>
+</customUI>
