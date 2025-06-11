@@ -2,8 +2,9 @@
     <ribbon startFromScratch="false">
         <tabs>
             <tab idMso="TabAddIns">
-				<group id="mocgSections" label="Sections">
-					<button id="moSectionsFromBullets" label="Text to Sections" image="TextToSections" size="large" onAction="CreateSectionsFromBullets" supertip = "Convert top-level bulleted lists to Sections. One slide will be added per section." />
+				<group id="mocgText" label="Text">
+					<button id="moSectionsFromBullets" label="Text to Sections" image="TextToSections" size="large" onAction="CreateSectionsFromBullets" supertip = "Convert multi-level bulleted lists to Sections. One slide will be added per section." />
+                    <button id="moSlidesFromBullets" label="Text to Slides" image="TextToSlides" size="large" onAction="CreateSlidesFromBullets" supertip = "Convert multi-level bulleted lists to slides. A level 1 bullet point will become a title slide, while a multi-level one will become a title and content slide." />
 				</group>
 			</tab>
         </tabs>

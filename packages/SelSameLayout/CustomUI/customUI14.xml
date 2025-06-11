@@ -2,7 +2,7 @@
     <ribbon startFromScratch="false">
         <tabs>
             <tab idMso="TabAddIns">
-				<group id="mocgSections" label="Sections">
+				<group id="mocgOptimize" label="Optimize">
 					<button id="moSelectSlideWithSameLayout" label="Select same layout slides" image="SelSameLayout" size="large" onAction="SelectSlidesWithSameLayout" supertip = "Select all slides that have the same layout as the currently selected slide." />
 				</group>
 			</tab>        

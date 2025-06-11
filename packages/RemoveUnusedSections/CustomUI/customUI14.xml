@@ -2,7 +2,7 @@
     <ribbon startFromScratch="false">
         <tabs>
             <tab idMso="TabAddIns">
-				<group id="mocgOptimize" label="Optimize">
+				<group id="mocgSections" label="Sections">
 					<button id="moRemoveUnusedSections" label="Delete Unused Sections" image="nit-RemoveSections" size="large" onAction="RemoveUnusedSections" supertip = "Delete Sections that are empty - with no slides. Sections with slides are not disturbed." />
 				</group>
 			</tab>
