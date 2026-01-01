@@ -10,12 +10,12 @@ Public Sub RemoveUnusedLayouts()
     Dim master As Design
     Dim layout As CustomLayout
     Dim uniqueID As String
-    Dim usedLayoutIndices As Object
+    Dim usedLayoutIndices As Collection
     Dim i As Long, j As Long
     Dim totalMasters As Long, totalLayouts As Long
     Dim unusedCount As Long
     
-    On Error GoTo RemoveUnusedLayoutsErr
+    ' On Error GoTo RemoveUnusedLayoutsErr
     
     Set ap = ActivePresentation
     If ap Is Nothing Then
@@ -23,14 +23,14 @@ Public Sub RemoveUnusedLayouts()
         Exit Sub
     End If
 
-    Set usedLayoutIndices = CreateObject("Scripting.Dictionary")
+    Set usedLayoutIndices = New Collection
 
     ' Identify all used layout indices
     For Each sld In ap.Slides
         ' Use a combination of the layout's index and the design's index as a unique id
         uniqueID = sld.CustomLayout.Index & "_" & sld.CustomLayout.Design.Index
-        If Not usedLayoutIndices.Exists(uniqueID) Then
-            usedLayoutIndices.Add uniqueID, True ' sld.CustomLayout.Index, sld.CustomLayout.Design.Index
+        If Not ItemExists(usedLayoutIndices, uniqueID) Then
+            usedLayoutIndices.Add True, uniqueID ' sld.CustomLayout.Index, sld.CustomLayout.Design.Index
         End If
     Next sld
     
@@ -58,7 +58,7 @@ Public Sub RemoveUnusedLayouts()
         For i = master.SlideMaster.CustomLayouts.Count To 1 Step -1
             ' Use a combination of the layout's index and the design's index as a unique id
             uniqueID = i & "_" & master.Index
-            If Not usedLayoutIndices.Exists(uniqueID) Then
+            If Not ItemExists(usedLayoutIndices, uniqueID) Then
                 ' Attempt to delete the layout
                 On Error Resume Next ' In case of error, skip to the next layout
                 master.SlideMaster.CustomLayouts(i).Delete
@@ -80,4 +80,15 @@ RemoveUnusedLayoutsErr:
     MsgBox "Error while performing operation: " & Err.Description & vbCrLf & _
            "Please try again.", vbOKOnly + vbExclamation, MACROTITLE
 End Sub
+
+Private Function ItemExists(coll As Collection, uniqueID As String) As Boolean
+    Dim result As Boolean
+    result = False
+    
+    On Error Resume Next
+    result = coll(uniqueID)
+    On Error GoTo 0
+    
+    ItemExists = result
+End Function
 
